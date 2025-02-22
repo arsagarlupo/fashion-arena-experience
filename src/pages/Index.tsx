@@ -1,11 +1,57 @@
-
 import { Navbar } from "@/components/Navbar";
 import { TermsModal } from "@/components/TermsModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Star, Sparkles, Clock, ShieldCheck } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ArrowRight, Star, Sparkles, Clock, ShieldCheck, Send } from "lucide-react";
+import { useState } from "react";
 
 export default function Index() {
+  const [message, setMessage] = useState("");
+  const [chatHistory, setChatHistory] = useState([
+    {
+      type: "bot",
+      content: "👋 Hi! I'm here to help you learn how to use Drobe. What would you like to know?",
+      options: [
+        "How do I start a virtual try-on?",
+        "How accurate are the size recommendations?",
+        "Can I save my favorite outfits?",
+        "How does the technology work?"
+      ]
+    }
+  ]);
+
+  const handleSendMessage = (text: string) => {
+    setChatHistory(prev => [...prev, { type: "user", content: text }]);
+
+    const responses: { [key: string]: { content: string; options?: string[] } } = {
+      "How do I start a virtual try-on?": {
+        content: "Starting a virtual try-on is easy! Just follow these steps:\n1. Click the 'Try Now' button\n2. Upload a photo or use our virtual avatar\n3. Select the clothing items you want to try\n4. See how they look on you instantly!",
+        options: ["How accurate are the size recommendations?", "Can I save my looks?"]
+      },
+      "How accurate are the size recommendations?": {
+        content: "Our AI-powered size recommendations are 95% accurate! We use advanced body measurement technology and machine learning to suggest the perfect size for you.",
+        options: ["How do I start a virtual try-on?", "How does the technology work?"]
+      },
+      "Can I save my favorite outfits?": {
+        content: "Yes! Once you create an account, you can save unlimited outfits to your virtual wardrobe and access them anytime.",
+        options: ["How do I start a virtual try-on?", "How does the technology work?"]
+      },
+      "How does the technology work?": {
+        content: "Our technology uses advanced AI and computer vision to create a precise virtual representation of how clothes will look on you. It considers fabric physics, lighting, and your body measurements.",
+        options: ["How do I start a virtual try-on?", "How accurate are the size recommendations?"]
+      }
+    };
+
+    setTimeout(() => {
+      setChatHistory(prev => [...prev, {
+        type: "bot",
+        content: responses[text]?.content || "I can help you with using Drobe's virtual try-on feature, size recommendations, saving outfits, and understanding our technology. What would you like to know?",
+        options: responses[text]?.options || Object.keys(responses)
+      }]);
+    }, 500);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-accent/10">
       <TermsModal />
@@ -13,9 +59,8 @@ export default function Index() {
       
       {/* Hero Section */}
       <section className="relative pt-32 pb-16 px-4">
-        {/* Background Video */}
         <div className="absolute inset-0 w-full h-full overflow-hidden">
-          <div className="absolute inset-0 bg-black/40 z-10" /> {/* Overlay */}
+          <div className="absolute inset-0 bg-black/40 z-10" />
           <img 
             src="https://res.cloudinary.com/dcm494eoc/image/upload/v1740220950/M_S_Womens_Fashion_The_New_Autumn_Season_A_W16_TV_Ad_-_M_S_720p_h264_1_ylwsan.gif"
             alt="Fashion Background"
@@ -23,7 +68,6 @@ export default function Index() {
           />
         </div>
 
-        {/* Content */}
         <div className="container mx-auto text-center relative z-20">
           <h1 className="text-5xl md:text-7xl font-display font-bold mb-6 animate-fade-in text-white">
             Virtual Fashion,<br />Real Style
@@ -83,6 +127,71 @@ export default function Index() {
                 <p className="text-gray-600">
                   Your data is safe with us. Experience secure virtual try-ons with our privacy-first technology.
                 </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* How to Use Section */}
+      <section className="py-16 px-4 bg-white">
+        <div className="container mx-auto">
+          <h2 className="text-3xl font-display font-bold mb-8 text-center">
+            How to Use Drobe
+          </h2>
+          <div className="max-w-2xl mx-auto">
+            <Card className="overflow-hidden">
+              <CardContent className="p-6">
+                <div className="h-[400px] overflow-y-auto mb-4 space-y-4">
+                  {chatHistory.map((msg, index) => (
+                    <div key={index} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`rounded-lg p-4 max-w-[80%] ${
+                        msg.type === 'user' 
+                          ? 'bg-primary text-white' 
+                          : 'bg-gray-100'
+                      }`}>
+                        <p className="whitespace-pre-line">{msg.content}</p>
+                        {msg.type === 'bot' && msg.options && (
+                          <div className="mt-4 space-y-2">
+                            {msg.options.map((option, idx) => (
+                              <Button
+                                key={idx}
+                                variant="outline"
+                                className="w-full justify-start text-left"
+                                onClick={() => handleSendMessage(option)}
+                              >
+                                {option}
+                              </Button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Type your question..."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && message.trim()) {
+                        handleSendMessage(message);
+                        setMessage('');
+                      }
+                    }}
+                  />
+                  <Button
+                    onClick={() => {
+                      if (message.trim()) {
+                        handleSendMessage(message);
+                        setMessage('');
+                      }
+                    }}
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>
