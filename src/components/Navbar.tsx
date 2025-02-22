@@ -99,7 +99,7 @@ export function Navbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <div className="flex items-center space-x-4 cursor-pointer">
-                    <span className="text-sm font-medium">{currentUser.name}</span>
+                    <span className="text-sm font-medium text-white">{currentUser.name}</span>
                     <Avatar className="h-8 w-8">
                       <AvatarImage src="https://github.com/shadcn.png" />
                       <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
@@ -235,7 +235,7 @@ export function Navbar() {
             ) : (
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <span className="text-sm font-medium">{currentUser.name}</span>
+                  <span className="text-sm font-medium text-white">{currentUser.name}</span>
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="https://github.com/shadcn.png" />
                     <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
