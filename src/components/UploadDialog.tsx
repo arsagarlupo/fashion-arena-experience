@@ -20,11 +20,39 @@ interface UploadDialogProps {
 export function UploadDialog({ isOpen, onOpenChange }: UploadDialogProps) {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [description, setDescription] = useState<string>("");
   const { toast } = useToast();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
+      
+      // Analyze the image
+      setAnalyzing(true);
+      try {
+        const formData = new FormData();
+        formData.append('image', selectedFile);
+        
+        const { data: { generatedText }, error } = await supabase.functions
+          .invoke('analyze-image', {
+            body: formData,
+          });
+
+        if (error) throw error;
+        
+        setDescription(generatedText);
+      } catch (error) {
+        console.error('Error analyzing image:', error);
+        toast({
+          title: "Error",
+          description: "Failed to analyze the image. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setAnalyzing(false);
+      }
     }
   };
 
@@ -41,7 +69,6 @@ export function UploadDialog({ isOpen, onOpenChange }: UploadDialogProps) {
 
     setUploading(true);
     try {
-      // Upload file to Supabase storage
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `uploads/${fileName}`;
@@ -54,18 +81,16 @@ export function UploadDialog({ isOpen, onOpenChange }: UploadDialogProps) {
         throw uploadError;
       }
 
-      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('garments')
         .getPublicUrl(filePath);
 
-      // Add to garments table
       const { error: dbError } = await supabase
         .from('garments')
         .insert([
           {
             name: file.name.split('.')[0],
-            description: 'User uploaded garment',
+            description: description || 'User uploaded garment',
             image_url: publicUrl,
           }
         ]);
@@ -81,6 +106,7 @@ export function UploadDialog({ isOpen, onOpenChange }: UploadDialogProps) {
 
       onOpenChange(false);
       setFile(null);
+      setDescription("");
     } catch (error) {
       console.error('Error uploading:', error);
       toast({
@@ -127,11 +153,22 @@ export function UploadDialog({ isOpen, onOpenChange }: UploadDialogProps) {
                 Selected file: {file.name}
               </p>
             )}
+            {analyzing && (
+              <p className="text-sm text-blue-500">
+                Analyzing your garment...
+              </p>
+            )}
+            {description && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <h3 className="text-sm font-medium mb-2">Garment Analysis:</h3>
+                <p className="text-sm text-gray-600">{description}</p>
+              </div>
+            )}
           </div>
           <Button
             type="submit"
             className="w-full"
-            disabled={!file || uploading}
+            disabled={!file || uploading || analyzing}
           >
             {uploading ? "Uploading..." : "Upload"}
           </Button>
