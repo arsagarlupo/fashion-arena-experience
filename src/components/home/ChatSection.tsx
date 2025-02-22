@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { ChatMessage } from "@/types/chat";
 import { chatResponses } from "@/utils/chatResponses";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 export function ChatSection() {
   const [message, setMessage] = useState("");
@@ -21,17 +23,53 @@ export function ChatSection() {
       ]
     }
   ]);
+  const { toast } = useToast();
 
-  const handleSendMessage = (text: string) => {
+  const saveChatMessage = async (userMessage: string, botResponse: string) => {
+    try {
+      const { error } = await supabase
+        .from('chat_messages')
+        .insert([
+          {
+            user_message: userMessage,
+            bot_response: botResponse
+          }
+        ]);
+
+      if (error) {
+        console.error('Error saving chat message:', error);
+        toast({
+          title: "Error",
+          description: "Failed to save chat message",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error saving chat message:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save chat message",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSendMessage = async (text: string) => {
     const userMessage: ChatMessage = { type: "user", content: text };
     setChatHistory(prev => [...prev, userMessage]);
 
+    // Get bot response
+    const botResponse: ChatMessage = chatResponses[text] || {
+      type: "bot",
+      content: "I can help you with using AIWear's virtual try-on feature, size recommendations, saving outfits, and understanding our technology. What would you like to know?",
+      options: Object.keys(chatResponses)
+    };
+
+    // Save to Supabase
+    await saveChatMessage(text, botResponse.content);
+
+    // Add bot response to chat history after a small delay
     setTimeout(() => {
-      const botResponse: ChatMessage = chatResponses[text] || {
-        type: "bot",
-        content: "I can help you with using AIWear's virtual try-on feature, size recommendations, saving outfits, and understanding our technology. What would you like to know?",
-        options: Object.keys(chatResponses)
-      };
       setChatHistory(prev => [...prev, botResponse]);
     }, 500);
   };
