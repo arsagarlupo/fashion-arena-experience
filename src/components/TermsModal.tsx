@@ -36,16 +36,16 @@ export function TermsModal() {
         <ScrollArea className="h-[60vh] rounded-md border p-4">
           <div className="space-y-4">
             <p className="text-sm leading-relaxed">
-              Welcome to our AR Clothing Store. By using this service, you agree to the following terms:
+              Welcome to our Virtual Clothing Store. By using this service, you agree to the following terms:
             </p>
-            <h3 className="text-lg font-semibold">1. AR Technology Usage</h3>
+            <h3 className="text-lg font-semibold">1. Virtual Try-on Technology Usage</h3>
             <p className="text-sm leading-relaxed">
-              Our AR try-on feature is provided "as is" and may not perfectly represent the actual clothing items.
+              Our virtual try-on feature is provided "as is" and may not perfectly represent the actual clothing items.
               Results may vary based on lighting, image quality, and other factors.
             </p>
             <h3 className="text-lg font-semibold">2. Image Rights</h3>
             <p className="text-sm leading-relaxed">
-              By uploading images, you grant us permission to process them for AR try-on purposes.
+              By uploading images, you grant us permission to process them for virtual try-on purposes.
               We do not store or use your images for any other purposes.
             </p>
             <h3 className="text-lg font-semibold">3. User Content</h3>

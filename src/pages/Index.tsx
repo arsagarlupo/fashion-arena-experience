@@ -18,7 +18,7 @@ export default function Index() {
             Virtual Fashion,<br />Real Style
           </h1>
           <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto animate-fade-in">
-            Experience the future of shopping with our AR clothing try-on. See how outfits look on you before you buy.
+            Experience the future of shopping with our virtual clothing try-on. See how outfits look on you before you buy.
           </p>
           <Button className="bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg animate-fade-in">
             Try Now <ArrowRight className="ml-2" />
@@ -53,10 +53,10 @@ export default function Index() {
         <div className="container mx-auto">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl font-display font-bold mb-6">
-              About ARdrobe
+              About Drobe
             </h2>
             <p className="text-lg text-gray-600 mb-8">
-              We're revolutionizing online shopping by bringing AR technology to your wardrobe.
+              We're revolutionizing online shopping by bringing virtual try-on technology to your wardrobe.
               Try clothes virtually, make confident purchases, and express your style without limitations.
             </p>
             <div className="flex items-center justify-center space-x-2">
@@ -71,9 +71,9 @@ export default function Index() {
       {/* Footer */}
       <footer className="py-8 px-4 border-t">
         <div className="container mx-auto text-center text-sm text-gray-600">
-          <p>© 2024 ARdrobe. All rights reserved.</p>
+          <p>© 2024 Drobe. All rights reserved.</p>
           <p className="mt-2">
-            AR try-on results may vary. See our terms and conditions for details.
+            Virtual try-on results may vary. See our terms and conditions for details.
           </p>
         </div>
       </footer>

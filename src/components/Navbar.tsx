@@ -14,7 +14,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <a href="/" className="flex items-center">
-            <span className="text-2xl font-display font-bold text-primary">ARdrobe</span>
+            <span className="text-2xl font-display font-bold text-primary">Drobe</span>
           </a>
 
           {/* Desktop Menu */}
