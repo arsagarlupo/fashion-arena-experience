@@ -6,12 +6,18 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight, Star, Sparkles, Clock, ShieldCheck, Send } from "lucide-react";
 import { useState } from "react";
 
+interface ChatMessage {
+  type: string;
+  content: string;
+  options?: string[];
+}
+
 export default function Index() {
   const [message, setMessage] = useState("");
-  const [chatHistory, setChatHistory] = useState([
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
     {
       type: "bot",
-      content: "👋 Hi! I'm here to help you learn how to use Drobe. What would you like to know?",
+      content: "👋 Hi! I'm here to help you learn how to use AIWear. What would you like to know?",
       options: [
         "How do I start a virtual try-on?",
         "How accurate are the size recommendations?",
@@ -22,33 +28,39 @@ export default function Index() {
   ]);
 
   const handleSendMessage = (text: string) => {
-    setChatHistory(prev => [...prev, { type: "user", content: text }]);
+    const userMessage: ChatMessage = { type: "user", content: text };
+    setChatHistory(prev => [...prev, userMessage]);
 
-    const responses: { [key: string]: { content: string; options?: string[] } } = {
+    const responses: { [key: string]: ChatMessage } = {
       "How do I start a virtual try-on?": {
+        type: "bot",
         content: "Starting a virtual try-on is easy! Just follow these steps:\n1. Click the 'Try Now' button\n2. Upload a photo or use our virtual avatar\n3. Select the clothing items you want to try\n4. See how they look on you instantly!",
         options: ["How accurate are the size recommendations?", "Can I save my looks?"]
       },
       "How accurate are the size recommendations?": {
+        type: "bot",
         content: "Our AI-powered size recommendations are 95% accurate! We use advanced body measurement technology and machine learning to suggest the perfect size for you.",
         options: ["How do I start a virtual try-on?", "How does the technology work?"]
       },
       "Can I save my favorite outfits?": {
+        type: "bot",
         content: "Yes! Once you create an account, you can save unlimited outfits to your virtual wardrobe and access them anytime.",
         options: ["How do I start a virtual try-on?", "How does the technology work?"]
       },
       "How does the technology work?": {
+        type: "bot",
         content: "Our technology uses advanced AI and computer vision to create a precise virtual representation of how clothes will look on you. It considers fabric physics, lighting, and your body measurements.",
         options: ["How do I start a virtual try-on?", "How accurate are the size recommendations?"]
       }
     };
 
     setTimeout(() => {
-      setChatHistory(prev => [...prev, {
+      const botResponse: ChatMessage = responses[text] || {
         type: "bot",
-        content: responses[text]?.content || "I can help you with using Drobe's virtual try-on feature, size recommendations, saving outfits, and understanding our technology. What would you like to know?",
-        options: responses[text]?.options || Object.keys(responses)
-      }]);
+        content: "I can help you with using AIWear's virtual try-on feature, size recommendations, saving outfits, and understanding our technology. What would you like to know?",
+        options: Object.keys(responses)
+      };
+      setChatHistory(prev => [...prev, botResponse]);
     }, 500);
   };
 
@@ -85,7 +97,7 @@ export default function Index() {
       <section className="py-16 px-4 bg-gradient-to-r from-primary/5 to-accent/5">
         <div className="container mx-auto">
           <h2 className="text-3xl font-display font-bold mb-12 text-center">
-            Why Choose Drobe?
+            Why Choose AIWear?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 bg-white/50 backdrop-blur">
@@ -137,7 +149,7 @@ export default function Index() {
       <section className="py-16 px-4 bg-white">
         <div className="container mx-auto">
           <h2 className="text-3xl font-display font-bold mb-8 text-center">
-            How to Use Drobe
+            How to Use AIWear
           </h2>
           <div className="max-w-2xl mx-auto">
             <Card className="overflow-hidden">
@@ -203,7 +215,7 @@ export default function Index() {
         <div className="container mx-auto">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl font-display font-bold mb-6">
-              About Drobe
+              About AIWear
             </h2>
             <p className="text-lg text-gray-600 mb-8">
               We're revolutionizing online shopping by bringing virtual try-on technology to your wardrobe.
@@ -221,7 +233,7 @@ export default function Index() {
       {/* Footer */}
       <footer className="py-8 px-4 border-t">
         <div className="container mx-auto text-center text-sm text-gray-600">
-          <p>© 2024 Drobe. All rights reserved.</p>
+          <p>© 2024 AIWear. All rights reserved.</p>
           <p className="mt-2">
             Virtual try-on results may vary. See our terms and conditions for details.
           </p>

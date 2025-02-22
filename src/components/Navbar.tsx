@@ -73,7 +73,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <span className="text-2xl font-display font-bold text-primary">Drobe</span>
+            <span className="text-2xl font-display font-bold text-primary">AIWear</span>
           </Link>
 
           {/* Desktop Menu */}
