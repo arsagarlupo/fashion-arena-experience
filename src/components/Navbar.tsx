@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { SignInDialog } from "./auth/SignInDialog";
 import { SignUpDialog } from "./auth/SignUpDialog";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -49,12 +49,10 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    // Apply theme to body
     document.body.className = theme === 'dark' ? 'dark' : '';
   }, [theme]);
 
   useEffect(() => {
-    // Apply font size to body
     document.body.style.fontSize = {
       small: '14px',
       medium: '16px',
@@ -69,33 +67,29 @@ export function Navbar() {
     window.location.reload();
   };
 
-  const handleProfilePhotoChange = () => {
-    // Placeholder for photo change functionality
-    console.log("Change profile photo");
-  };
-
-  const handleInviteFriends = () => {
-    // Placeholder for invite functionality
-    console.log("Invite friends");
-  };
-
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <a href="/" className="flex items-center">
+          <Link to="/" className="flex items-center">
             <span className="text-2xl font-display font-bold text-primary">Drobe</span>
-          </a>
+          </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="/" className="text-sm font-medium hover:text-primary transition-colors">
+            <Link 
+              to="/" 
+              className="text-sm font-medium hover:text-primary transition-colors"
+            >
               Home
-            </a>
-            <a href="#about" className="text-sm font-medium hover:text-primary transition-colors">
+            </Link>
+            <Link 
+              to="/about"
+              className="text-sm font-medium hover:text-primary transition-colors"
+            >
               About Us
-            </a>
+            </Link>
             {!currentUser ? (
               <div className="flex items-center space-x-4">
                 <SignInDialog />
@@ -112,12 +106,13 @@ export function Navbar() {
                     </Avatar>
                   </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuContent align="end" className="w-56" sideOffset={8}>
                   <DropdownMenuItem>
                     <UserPen className="mr-2 h-4 w-4" />
                     <span>Edit Profile</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleProfilePhotoChange}>
+
+                  <DropdownMenuItem>
                     <Upload className="mr-2 h-4 w-4" />
                     <span>Change Photo</span>
                   </DropdownMenuItem>
@@ -129,8 +124,7 @@ export function Navbar() {
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Settings</span>
                     </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent className="w-56">
-                      {/* Theme Selection */}
+                    <DropdownMenuSubContent>
                       <DropdownMenuSub>
                         <DropdownMenuSubTrigger>
                           {theme === 'dark' ? (
@@ -148,7 +142,6 @@ export function Navbar() {
                         </DropdownMenuSubContent>
                       </DropdownMenuSub>
 
-                      {/* Font Size Selection */}
                       <DropdownMenuSub>
                         <DropdownMenuSubTrigger>
                           <Text className="mr-2 h-4 w-4" />
@@ -163,7 +156,6 @@ export function Navbar() {
                         </DropdownMenuSubContent>
                       </DropdownMenuSub>
 
-                      {/* Language Selection */}
                       <DropdownMenuSub>
                         <DropdownMenuSubTrigger>
                           <Languages className="mr-2 h-4 w-4" />
@@ -190,7 +182,7 @@ export function Navbar() {
                     <span>Updates</span>
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem onClick={handleInviteFriends}>
+                  <DropdownMenuItem>
                     <Share className="mr-2 h-4 w-4" />
                     <span>Invite Friends</span>
                   </DropdownMenuItem>
@@ -213,7 +205,7 @@ export function Navbar() {
             {isMenuOpen ? (
               <X className="h-6 w-6" />
             ) : (
-              <Menu className="h-6 w-6" />
+              <Menu className="h-6 w-4" />
             )}
           </button>
         </div>
@@ -221,18 +213,20 @@ export function Navbar() {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden py-4 space-y-4 animate-fade-in">
-            <a
-              href="/"
+            <Link
+              to="/"
               className="block text-sm font-medium hover:text-primary transition-colors"
+              onClick={() => setIsMenuOpen(false)}
             >
               Home
-            </a>
-            <a
-              href="#about"
+            </Link>
+            <Link
+              to="/about"
               className="block text-sm font-medium hover:text-primary transition-colors"
+              onClick={() => setIsMenuOpen(false)}
             >
               About Us
-            </a>
+            </Link>
             {!currentUser ? (
               <div className="space-y-2">
                 <SignInDialog />
