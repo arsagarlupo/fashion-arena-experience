@@ -22,15 +22,18 @@ export function SignUpDialog() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Starting signup process...', { name, email });
     
     try {
       // Check if user already exists
-      const { data: existingUser } = await supabase
+      const { data: existingUser, error: checkError } = await supabase
         .from('users')
         .select()
         .eq('email', email)
         .maybeSingle();
       
+      console.log('Checking existing user:', { existingUser, checkError });
+
       if (existingUser) {
         toast({
           title: "Error",
@@ -43,16 +46,23 @@ export function SignUpDialog() {
       // Add new user
       const { data: newUser, error: insertError } = await supabase
         .from('users')
-        .insert({
+        .insert([{
           name,
           email,
           password
-        })
+        }])
         .select()
-        .maybeSingle();
+        .single();
       
-      if (insertError || !newUser) {
+      console.log('Insert result:', { newUser, insertError });
+      
+      if (insertError) {
+        console.error('Insert error:', insertError);
         throw insertError;
+      }
+
+      if (!newUser) {
+        throw new Error('No user data returned after insert');
       }
 
       // Set as current user
@@ -69,7 +79,7 @@ export function SignUpDialog() {
       console.error('Error during sign up:', error);
       toast({
         title: "Error",
-        description: "An error occurred while creating your account.",
+        description: "An error occurred while creating your account. Please try again.",
         variant: "destructive",
       });
     }
