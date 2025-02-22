@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export function SignUpDialog() {
   const [name, setName] = useState("");
@@ -19,37 +20,59 @@ export function SignUpDialog() {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Get existing users from localStorage
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    
-    // Check if user already exists
-    if (users.some((user: any) => user.email === email)) {
+    try {
+      // Check if user already exists
+      const { data: existingUser } = await supabase
+        .from('users')
+        .select()
+        .eq('email', email)
+        .maybeSingle();
+      
+      if (existingUser) {
+        toast({
+          title: "Error",
+          description: "An account with this email already exists.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Add new user
+      const { data: newUser, error: insertError } = await supabase
+        .from('users')
+        .insert({
+          name,
+          email,
+          password
+        })
+        .select()
+        .maybeSingle();
+      
+      if (insertError || !newUser) {
+        throw insertError;
+      }
+
+      // Set as current user
+      localStorage.setItem("currentUser", JSON.stringify(newUser));
+      
+      toast({
+        title: "Success!",
+        description: "Your account has been created.",
+      });
+      
+      setIsOpen(false);
+      window.location.reload();
+    } catch (error) {
+      console.error('Error during sign up:', error);
       toast({
         title: "Error",
-        description: "An account with this email already exists.",
+        description: "An error occurred while creating your account.",
         variant: "destructive",
       });
-      return;
     }
-    
-    // Add new user
-    const newUser = { name, email, password };
-    users.push(newUser);
-    localStorage.setItem("users", JSON.stringify(users));
-    
-    // Set as current user
-    localStorage.setItem("currentUser", JSON.stringify(newUser));
-    
-    toast({
-      title: "Success!",
-      description: "Your account has been created.",
-    });
-    
-    setIsOpen(false);
-    window.location.reload(); // Refresh to update UI
   };
 
   return (

@@ -12,6 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export function SignInDialog() {
   const [email, setEmail] = useState("");
@@ -20,26 +21,54 @@ export function SignInDialog() {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSignIn = (e: React.FormEvent) => {
+  const logSignInAttempt = async (email: string, successful: boolean) => {
+    try {
+      await supabase
+        .from('sign_in_attempts')
+        .insert({
+          email,
+          successful
+        });
+    } catch (error) {
+      console.error('Error logging sign in attempt:', error);
+    }
+  };
+
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Get existing users from localStorage
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    const user = users.find((u: any) => u.email === email && u.password === password);
-    
-    if (user) {
-      localStorage.setItem("currentUser", JSON.stringify(user));
+    try {
+      const { data: users, error: fetchError } = await supabase
+        .from('users')
+        .select()
+        .eq('email', email)
+        .eq('password', password)
+        .maybeSingle();
+
+      if (fetchError || !users) {
+        await logSignInAttempt(email, false);
+        toast({
+          title: "Error",
+          description: "Invalid email or password.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      await logSignInAttempt(email, true);
+      localStorage.setItem("currentUser", JSON.stringify(users));
       toast({
         title: "Success!",
         description: "You have successfully signed in.",
       });
       setIsOpen(false);
       navigate("/");
-      window.location.reload(); // Refresh to update UI
-    } else {
+      window.location.reload();
+    } catch (error) {
+      console.error('Error during sign in:', error);
       toast({
         title: "Error",
-        description: "Invalid email or password.",
+        description: "An error occurred during sign in.",
         variant: "destructive",
       });
     }
