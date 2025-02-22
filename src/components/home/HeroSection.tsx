@@ -1,8 +1,12 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { UploadDialog } from "@/components/UploadDialog";
 
 export function HeroSection() {
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+
   return (
     <section className="relative pt-32 pb-16 px-4">
       <div className="absolute inset-0 w-full h-full overflow-hidden">
@@ -21,10 +25,18 @@ export function HeroSection() {
         <p className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto animate-fade-in">
           Experience the future of shopping with our virtual clothing try-on. See how outfits look on you before you buy.
         </p>
-        <Button className="bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg animate-fade-in">
+        <Button 
+          className="bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg animate-fade-in"
+          onClick={() => setIsUploadDialogOpen(true)}
+        >
           Try Now <ArrowRight className="ml-2" />
         </Button>
       </div>
+
+      <UploadDialog 
+        isOpen={isUploadDialogOpen}
+        onOpenChange={setIsUploadDialogOpen}
+      />
     </section>
   );
 }
